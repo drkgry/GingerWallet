@@ -21,6 +21,7 @@ using WalletWasabi.Extensions;
 using WalletWasabi.Logging;
 using WalletWasabi.WabiSabi.Backend.DoSPrevention;
 using WalletWasabi.WabiSabi.Backend.Events;
+using WalletWasabi.WabiSabi.Recommendation;
 using WalletWasabi.Helpers;
 
 namespace WalletWasabi.WabiSabi.Backend.Rounds;
@@ -52,6 +53,8 @@ public partial class Arena : PeriodicRunner
 		{
 			CoinVerifier.CoinBlacklisted += CoinVerifier_CoinBlacklisted;
 		}
+
+		Denominations = new(Config.MinRegistrableAmount, Config.MaxRegistrableAmount);
 	}
 
 	public event EventHandler<Transaction>? CoinJoinBroadcast;
@@ -80,9 +83,10 @@ public partial class Arena : PeriodicRunner
 	private RoundParameterFactory RoundParameterFactory { get; }
 	public MaxSuggestedAmountProvider MaxSuggestedAmountProvider { get; }
 
+	public DenominationFactory Denominations { get; }
+
 	protected override async Task ActionAsync(CancellationToken cancel)
 	{
-		var before = DateTimeOffset.UtcNow;
 		using (await AsyncLock.LockAsync(cancel).ConfigureAwait(false))
 		{
 			var beforeInside = DateTimeOffset.UtcNow;
@@ -194,6 +198,9 @@ public partial class Arena : PeriodicRunner
 			{
 				if (round.Alices.All(x => x.ConfirmedConnection))
 				{
+					// We don't leak information about whether an input is exempt from fee or not
+					var inputs = round.Alices.Select(x => x.Coin.EffectiveValue(round.Parameters.MiningFeeRate, round.Parameters.CoordinationFeeRate)).ToList();
+					round.Denomination = Denominations.CreatePreferedDenominations(inputs, round.Parameters.MiningFeeRate).ToImmutableSortedSet();
 					SetRoundPhase(round, Phase.OutputRegistration);
 				}
 				else if (round.ConnectionConfirmationTimeFrame.HasExpired)
