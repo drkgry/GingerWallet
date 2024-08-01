@@ -35,6 +35,7 @@ public partial class Arena : PeriodicRunner
 		Prison prison,
 		ICoinJoinIdStore coinJoinIdStore,
 		RoundParameterFactory roundParameterFactory,
+		IDenominationFactory? denominationFactory = null,
 		CoinJoinTransactionArchiver? archiver = null,
 		CoinJoinScriptStore? coinJoinScriptStore = null,
 		CoinVerifier? coinVerifier = null) : base(period)
@@ -54,7 +55,7 @@ public partial class Arena : PeriodicRunner
 			CoinVerifier.CoinBlacklisted += CoinVerifier_CoinBlacklisted;
 		}
 
-		Denominations = new(Config.MinRegistrableAmount, Config.MaxRegistrableAmount);
+		DenominationFactory = denominationFactory;
 	}
 
 	public event EventHandler<Transaction>? CoinJoinBroadcast;
@@ -83,7 +84,7 @@ public partial class Arena : PeriodicRunner
 	private RoundParameterFactory RoundParameterFactory { get; }
 	public MaxSuggestedAmountProvider MaxSuggestedAmountProvider { get; }
 
-	public DenominationFactory Denominations { get; }
+	public IDenominationFactory? DenominationFactory { get; }
 
 	protected override async Task ActionAsync(CancellationToken cancel)
 	{
@@ -200,7 +201,7 @@ public partial class Arena : PeriodicRunner
 				{
 					// We don't leak information about whether an input is exempt from fee or not
 					var inputs = round.Alices.Select(x => x.Coin.EffectiveValue(round.Parameters.MiningFeeRate, round.Parameters.CoordinationFeeRate)).ToList();
-					round.Denomination = Denominations.CreatePreferedDenominations(inputs, round.Parameters.MiningFeeRate).ToImmutableSortedSet();
+					round.Denomination = (DenominationFactory?.CreatePreferedDenominations(inputs, round.Parameters.MiningFeeRate) ?? []).ToImmutableSortedSet();
 					SetRoundPhase(round, Phase.OutputRegistration);
 				}
 				else if (round.ConnectionConfirmationTimeFrame.HasExpired)

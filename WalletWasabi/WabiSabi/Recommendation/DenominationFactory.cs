@@ -5,7 +5,7 @@ using WalletWasabi.Extensions;
 
 namespace WalletWasabi.WabiSabi.Recommendation;
 
-public class DenominationFactory
+public class DenominationFactory : IDenominationFactory
 {
 	public DenominationFactory(Money minAllowedOutputAmount, Money maxAllowedOutputAmount)
 	{
