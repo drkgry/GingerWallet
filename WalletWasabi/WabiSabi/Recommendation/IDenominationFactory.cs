@@ -7,5 +7,5 @@ public interface IDenominationFactory
 {
 	public List<Money> StandardDenominations { get; }
 
-	public List<Money> CreatePreferedDenominations(IEnumerable<Money> inputEffectiveValues, FeeRate miningFee);
+	public List<Money> CreatePreferedDenominations(List<Money> inputEffectiveValues, FeeRate miningFee);
 }

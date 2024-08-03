@@ -57,7 +57,7 @@ public class AmountDecomposerTests
 		var amountDecomposer = new AmountDecomposer(feeRate, allowedOutputAmountRange.Min, allowedOutputAmountRange.Max, availableVsize, allowedOutputTypes, InsecureRandom.Instance);
 
 		var denominations = new DenominationFactory(allowedOutputAmountRange.Min, allowedOutputAmountRange.Max);
-		var denoms = denominations.CreatePreferedDenominations(registeredCoinEffectiveValues.Concat(theirCoinEffectiveValues), feeRate);
+		var denoms = denominations.CreatePreferedDenominations(registeredCoinEffectiveValues.Concat(theirCoinEffectiveValues).ToList(), feeRate);
 
 		var outputValues = amountDecomposer.Decompose(totalEffectiveValue, denoms);
 

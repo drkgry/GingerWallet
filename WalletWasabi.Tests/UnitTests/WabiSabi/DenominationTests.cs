@@ -56,7 +56,7 @@ public class DenominationTests
 		// between minOutputAmount and
 		Assert.True(minOutputAmount <= denoms[^1].Satoshi && effectiveInput.Max() >= denoms[0]);
 
-		Assert.True(denomFactory.IsValidDenomination(denoms, effectiveInput));
+		Assert.True(denomFactory.IsValidDenomination(denoms, effectiveInput, feeRate));
 	}
 
 	[Theory]

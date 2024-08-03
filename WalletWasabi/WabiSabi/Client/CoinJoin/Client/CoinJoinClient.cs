@@ -827,10 +827,10 @@ public class CoinJoinClient
 		var constructionState = roundState.Assert<ConstructionState>();
 
 		var registeredCoinEffectiveValues = registeredAliceClients.Select(x => x.EffectiveValue);
-		var allCoinEffectiveValues = constructionState.Inputs.Select(x => x.EffectiveValue(roundParameters.MiningFeeRate, roundParameters.CoordinationFeeRate));
+		var allCoinEffectiveValues = constructionState.Inputs.Select(x => x.EffectiveValue(roundParameters.MiningFeeRate, roundParameters.CoordinationFeeRate)).ToList();
 
 		var denomFactory = new DenominationFactory(roundParameters.AllowedOutputAmounts.Min, roundParameters.AllowedOutputAmounts.Max);
-		if (!denomFactory.IsValidDenomination(denoms, allCoinEffectiveValues))
+		if (!denomFactory.IsValidDenomination(denoms, allCoinEffectiveValues, roundParameters.MiningFeeRate))
 		{
 			roundState.LogInfo($"The recommended denomination levels failed the validation - [{denoms.ListToString()}]");
 			denoms = denomFactory.CreatePreferedDenominations(allCoinEffectiveValues, roundParameters.MiningFeeRate);

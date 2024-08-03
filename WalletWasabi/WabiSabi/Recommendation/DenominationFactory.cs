@@ -1,3 +1,4 @@
+using LinqKit;
 using NBitcoin;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ public class DenominationFactory : IDenominationFactory
 
 	public List<Money> StandardDenominations { get; }
 
-	public List<Money> CreatePreferedDenominations(IEnumerable<Money> inputEffectiveValues, FeeRate miningFee)
+	public List<Money> CreatePreferedDenominations(List<Money> inputEffectiveValues, FeeRate miningFee)
 	{
 		var histogram = GetDenominationFrequencies(inputEffectiveValues, miningFee);
 
@@ -51,30 +52,44 @@ public class DenominationFactory : IDenominationFactory
 		return denoms;
 	}
 
-	public bool IsValidDenomination(IList<Money> denoms, IEnumerable<Money> inputEffectiveValues)
+	public bool IsValidDenomination(IList<Money> denoms, IList<Money> inputEffectiveValues, FeeRate miningFee)
 	{
-		if (denoms.Count == 0 || !inputEffectiveValues.Any())
-		{
-			return false;
-		}
-		// Should be reverse ordered, unique, without big differences
-		for (int idx = 0, len = denoms.Count - 1; idx < len; idx++)
-		{
-			if (denoms[idx] <= denoms[idx + 1] || (idx > 0 && denoms[idx] > 4 * denoms[idx + 1]))
-			{
-				return false;
-			}
-		}
-		// Should use standard denomination levels
-		if (denoms.Any(x => !StandardDenominations.Contains(x)))
+		if (denoms.Count == 0 || inputEffectiveValues.Count == 0)
 		{
 			return false;
 		}
 
-		// There is no garantee that denoms[^1] <= inputEffectiveValues.Min(), that's completely valid!
-		if (denoms[0] > inputEffectiveValues.Max() || denoms[^1] < MinAllowedOutputAmount)
+		// Should be reverse ordered, unique, use standard denomination levels
+		for (int idx = 0, len = denoms.Count - 1; idx < len; idx++)
+		{
+			if (denoms[idx] <= denoms[idx + 1] || !StandardDenominations.Contains(denoms[idx]))
+			{
+				return false;
+			}
+		}
+
+		// Last elem also should use standard denomination levels
+		if (!StandardDenominations.Contains(denoms[^1]))
 		{
 			return false;
+		}
+
+		var maxInput = inputEffectiveValues.Max();
+		// There is no garantee that denoms[^1] <= inputEffectiveValues.Min(), that's completely valid!
+		if (denoms[0] > maxInput || denoms[^1] < MinAllowedOutputAmount)
+		{
+			return false;
+		}
+
+		// We shouldn't be too far from the next
+		var secondInput = inputEffectiveValues.Where(x => x < maxInput).Max() ?? maxInput;
+		var minimumOutputFee = miningFee.GetFee(ScriptType.P2WPKH.EstimateOutputVsize()).Satoshi;
+		for (int idx = 0, len = denoms.Count - 1; idx < len; idx++)
+		{
+			if (denoms[idx] < secondInput && denoms[idx].Satoshi > 6.2 * (denoms[idx + 1].Satoshi + minimumOutputFee))
+			{
+				return false;
+			}
 		}
 
 		return true;
