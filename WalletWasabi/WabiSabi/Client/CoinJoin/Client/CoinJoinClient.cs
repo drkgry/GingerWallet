@@ -817,7 +817,7 @@ public class CoinJoinClient
 		var combinedToken = linkedCts.Token;
 
 		var denoms = await RecommendationAsync(roundId, recommendationEndTime, combinedToken).ConfigureAwait(false);
-		roundState.LogInfo($"The recommended denomination levels are: [{denoms.ListToString()}]");
+		roundState.LogInfo($"The recommended denomination levels are ({denoms.Count,2}): [{denoms.ListToString()}]");
 
 		var registeredCoins = registeredAliceClients.Select(x => x.SmartCoin.Coin);
 		var inputEffectiveValuesAndSizes = registeredAliceClients.Select(x => (x.EffectiveValue, x.SmartCoin.ScriptPubKey.EstimateInputVsize()));
@@ -826,20 +826,21 @@ public class CoinJoinClient
 		// Calculate outputs values
 		var constructionState = roundState.Assert<ConstructionState>();
 
-		var registeredCoinEffectiveValues = registeredAliceClients.Select(x => x.EffectiveValue);
+		var registeredCoinEffectiveValues = registeredAliceClients.Select(x => x.EffectiveValue).ToList();
 		var allCoinEffectiveValues = constructionState.Inputs.Select(x => x.EffectiveValue(roundParameters.MiningFeeRate, roundParameters.CoordinationFeeRate)).ToList();
 
 		var denomFactory = new DenominationFactory(roundParameters.AllowedOutputAmounts.Min, roundParameters.AllowedOutputAmounts.Max);
-		if (!denomFactory.IsValidDenomination(denoms, allCoinEffectiveValues, roundParameters.MiningFeeRate))
+		var defaultDenoms = denomFactory.CreateDefaultDenominations(allCoinEffectiveValues, roundParameters.MiningFeeRate);
+		if (!denomFactory.IsValidDenomination(denoms, allCoinEffectiveValues, roundParameters.MiningFeeRate, defaultDenoms))
 		{
-			roundState.LogInfo($"The recommended denomination levels failed the validation - [{denoms.ListToString()}]");
-			denoms = denomFactory.CreatePreferedDenominations(allCoinEffectiveValues, roundParameters.MiningFeeRate);
+			roundState.LogInfo($"The recommended denomination levels failed the validation!");
+			denoms = defaultDenoms;
 		}
-		roundState.LogInfo($"Denomination levels: [{denoms.ListToString()}]");
+		roundState.LogInfo($"Denomination levels ({denoms.Count,2}): [{denoms.ListToString()}]");
 
 		var outputTxOuts = OutputProvider.GetOutputs(roundId, roundParameters, registeredCoinEffectiveValues, denoms, (int)availableVsize).ToArray();
-		roundState.LogInfo($"Registered coins' effective values: [{registeredCoinEffectiveValues.ListToString()}]");
-		roundState.LogInfo($"Generated outputs: [{outputTxOuts.Select(x => x.Value).ListToString()}]");
+		roundState.LogInfo($"Registered coins' effective values ({registeredCoinEffectiveValues.Count,2}): [{registeredCoinEffectiveValues.ListToString()}]");
+		roundState.LogInfo($"Generated outputs ({outputTxOuts.Length,2}): [{outputTxOuts.Select(x => x.Value).ListToString()}]");
 
 		DependencyGraph dependencyGraph = DependencyGraph.ResolveCredentialDependencies(inputEffectiveValuesAndSizes, outputTxOuts, roundParameters.MiningFeeRate, roundParameters.MaxVsizeAllocationPerAlice);
 		DependencyGraphTaskScheduler scheduler = new(dependencyGraph);

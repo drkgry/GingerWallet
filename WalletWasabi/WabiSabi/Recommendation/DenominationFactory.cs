@@ -6,7 +6,7 @@ using WalletWasabi.Extensions;
 
 namespace WalletWasabi.WabiSabi.Recommendation;
 
-public class DenominationFactory : IDenominationFactory
+public class DenominationFactory
 {
 	public DenominationFactory(Money minAllowedOutputAmount, Money maxAllowedOutputAmount)
 	{
@@ -21,7 +21,12 @@ public class DenominationFactory : IDenominationFactory
 
 	public List<Money> StandardDenominations { get; }
 
-	public List<Money> CreatePreferedDenominations(List<Money> inputEffectiveValues, FeeRate miningFee)
+	public virtual List<Money> CreatePreferedDenominations(IList<Money> inputEffectiveValues, FeeRate miningFee)
+	{
+		return CreateDefaultDenominations(inputEffectiveValues, miningFee);
+	}
+
+	public List<Money> CreateDefaultDenominations(IList<Money> inputEffectiveValues, FeeRate miningFee)
 	{
 		var histogram = GetDenominationFrequencies(inputEffectiveValues, miningFee);
 
@@ -52,7 +57,7 @@ public class DenominationFactory : IDenominationFactory
 		return denoms;
 	}
 
-	public bool IsValidDenomination(IList<Money> denoms, IList<Money> inputEffectiveValues, FeeRate miningFee)
+	public bool IsValidDenomination(IList<Money> denoms, IList<Money> inputEffectiveValues, FeeRate miningFee, IList<Money>? defaultDenominations = null)
 	{
 		if (denoms.Count == 0 || inputEffectiveValues.Count == 0)
 		{
@@ -81,14 +86,32 @@ public class DenominationFactory : IDenominationFactory
 			return false;
 		}
 
+		// The default denomination list is valid by definition, we use that when in doubt
+		defaultDenominations ??= CreateDefaultDenominations(inputEffectiveValues, miningFee);
+		var minimumOutputFee = miningFee.GetFee(ScriptType.P2WPKH.EstimateOutputVsize()).Satoshi;
+
+		// the last member should be small enough
+		if (defaultDenominations.Count > 0 && denoms[^1] > defaultDenominations[^1])
+		{
+			// We might allow this, but all input should be able to work that worked with the default
+			var smallestSingle = inputEffectiveValues.Where(x => x - minimumOutputFee >= defaultDenominations[^1]).Min();
+			if (smallestSingle - minimumOutputFee < denoms[^1])
+			{
+				return false;
+			}
+		}
+
 		// We shouldn't be too far from the next
 		var secondInput = inputEffectiveValues.Where(x => x < maxInput).Max() ?? maxInput;
-		var minimumOutputFee = miningFee.GetFee(ScriptType.P2WPKH.EstimateOutputVsize()).Satoshi;
 		for (int idx = 0, len = denoms.Count - 1; idx < len; idx++)
 		{
 			if (denoms[idx] < secondInput && denoms[idx].Satoshi > 6.2 * (denoms[idx + 1].Satoshi + minimumOutputFee))
 			{
-				return false;
+				int dIdx = defaultDenominations.IndexOf(denoms[idx]);
+				if (dIdx < 0 || dIdx + 1 >= defaultDenominations.Count || defaultDenominations[dIdx + 1] != denoms[idx + 1])
+				{
+					return false;
+				}
 			}
 		}
 

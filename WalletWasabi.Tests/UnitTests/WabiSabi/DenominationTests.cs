@@ -102,6 +102,23 @@ public class DenominationTests
 		Assert.True(withChange > 0 && withoutChange > 0);
 	}
 
+	[Fact]
+	public void ValidationTest()
+	{
+		double[] inputs = [0.00121826, 0.00523669, 0.00040754, 0.00490754, 0.09529469, 0.00345048, 0.01050448, 0.00523669, 0.00523669, 0.00254372];
+		double[] denoms = [0.01048576, 0.00500000, 0.00039366, 0.00013122];
+
+		var inputEffectiveValues = inputs.Select(x => new Money((decimal)x, MoneyUnit.BTC)).ToList();
+		var denomsMoney = denoms.Select(x => new Money((decimal)x, MoneyUnit.BTC)).ToList();
+
+		FeeRate miningFee = new((decimal)134);
+		DenominationFactory denominationFactory = new(5000L, 10_0000_0000L);
+		var denoms2 = denominationFactory.CreatePreferedDenominations(inputEffectiveValues, miningFee);
+
+		Assert.True(denominationFactory.IsValidDenomination(denomsMoney, inputEffectiveValues, miningFee));
+		Assert.True(denominationFactory.IsValidDenomination(denoms2, inputEffectiveValues, miningFee));
+	}
+
 	protected long SingleTag(long value, long power)
 	{
 		while (value != 0 && (value % power) == 0)
