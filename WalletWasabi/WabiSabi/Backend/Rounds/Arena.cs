@@ -202,6 +202,7 @@ public partial class Arena : PeriodicRunner
 					// We don't leak information about whether an input is exempt from fee or not
 					var inputs = round.Alices.Select(x => x.Coin.EffectiveValue(round.Parameters.MiningFeeRate, round.Parameters.CoordinationFeeRate)).ToList();
 					round.Denomination = (DenominationFactory?.CreatePreferedDenominations(inputs, round.Parameters.MiningFeeRate) ?? []).ToImmutableSortedSet();
+					round.LogInfo($"Recommended denomination levels: [{round.Denomination.ListToString()}]");
 					SetRoundPhase(round, Phase.OutputRegistration);
 				}
 				else if (round.ConnectionConfirmationTimeFrame.HasExpired)
