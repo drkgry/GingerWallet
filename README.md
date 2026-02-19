@@ -1,11 +1,5 @@
-<!--
-TODO: Replace the hero image below with a real Ginger Wallet screenshot.
-Suggested format: 1600x900 (or wider), dark theme preferred.
--->
-
 <p align="center">
-  <!-- TODO: replace with real image -->
-  <!-- <img src="docs/images/gingerwallet-hero.png" alt="Ginger Wallet" width="900" /> -->
+<img width="1486" height="853" alt="main" src="https://github.com/user-attachments/assets/5a0b803c-80c3-439b-8f78-6f33da90a45f" />
 </p>
 
 <h1 align="center">Ginger Wallet</h1>
@@ -53,12 +47,12 @@ You can always build the latest version directly from the `master` branch.
 
 ## Release Artifacts
 
-### Windows
-- **MSI** – Code signed (Martin Rimoczi, Certum Code Signing CA)
-- **ZIP (portable)** – Deterministically reproducible build
+- **MSI** Windows – Code signed (Martin Rimoczi, Certum Code Signing CA)
+- **DMG** MacOS x64 and ARM64 versions – Signed with Apple Developer ID
+- **ZIP (portable)** – Binaries for all platforms, Deterministically reproducible build
+- **DEB** - Debian linux package
+- **tar.gz** - Compressed archive containing the Linux application files  
 
-### macOS
-- **DMG** – Signed with Apple Developer ID
 
 ### Verification
 - All files include a corresponding **PGP (.asc)** signature  
