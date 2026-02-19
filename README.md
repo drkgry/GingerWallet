@@ -1,87 +1,109 @@
+<!--
+TODO: Replace the hero image below with a real Ginger Wallet screenshot.
+Suggested format: 1600x900 (or wider), dark theme preferred.
+-->
+
 <p align="center">
-  <a href="https://gingerwallet.io">
-    <img src="https://github.com/GingerPrivacy/GingerWallet/blob/master/ui-ww.png">
+  <!-- TODO: replace with real image -->
+  <!-- <img src="docs/images/gingerwallet-hero.png" alt="Ginger Wallet" width="900" /> -->
+</p>
+
+<h1 align="center">Ginger Wallet</h1>
+
+<p align="center">
+  Privacy-focused Bitcoin wallet.
+</p>
+
+<p align="center">
+  <a href="https://github.com/GingerPrivacy/GingerWallet/actions/workflows/UnitTests.yml">
+    <img src="https://github.com/GingerPrivacy/GingerWallet/actions/workflows/UnitTests.yml/badge.svg?branch=master" alt="UnitTests" />
   </a>
 </p>
 
 <h3 align="center">
-    An open-source, non-custodial, privacy-focused Bitcoin wallet for desktop.
+  <a href="https://gingerwallet.io">Website</a>
+  <span> | </span>
+  <a href="https://docs.gingerwallet.io/">Documentation</a>
+  <span> | </span>
+  <a href="https://api.gingerwallet.io/swagger">API</a>
+  <span> | </span>
+  <a href="https://github.com/GingerPrivacy/GingerWallet/discussions/5185">Support</a>
+  <span> | </span>
+  <a href="https://github.com/GingerPrivacy/GingerWallet/blob/master/PGP.txt">PGP</a>
 </h3>
 
-<h3 align="center">
-  <a href="https://gingerwallet.io">
-    Website
-  </a>
-  <span> | </span>
-  <a href="https://docs.gingerwallet.io/">
-    Documentation
-  </a>
-  <span> | </span>
-  <a href="https://api.gingerwallet.io/swagger">
-    API
-  </a>
-  <span> | </span>
-  <a href="https://github.com/GingerPrivacy/GingerWallet/discussions/5185">
-    Support
-  </a>
-  <span> | </span>
-  <a href="https://github.com/GingerPrivacy/GingerWallet/blob/master/PGP.txt">
-    PGP
-  </a>
-</h3>
+---
 
-<h3>
+## What is Ginger Wallet?
 
-| Code Quality           | Windows Tests           | Linux Tests             | macOS Tests             | Continuous Delivery       | Deterministic builds      | License                   |
-| :----------------------| :-----------------------| :-----------------------| :-----------------------| :-------------------------| :-------------------------| :-------------------------|
-| [![CodeFactor][9]][10] | [![Build Status][1]][2] | [![Build Status][3]][4] | [![Build Status][5]][6] | [![Build Status][11]][12] | [![Build Status][13]][14] | [![GitHub license][7]][8] |
+Ginger Wallet is a privacy-focused, open-source Bitcoin desktop wallet.
 
-[1]: https://dev.azure.com/zkSNACKs/Wasabi/_apis/build/status/Wasabi.Windows?branchName=master
-[2]: https://dev.azure.com/zkSNACKs/Wasabi/_build?definitionId=3
-[3]: https://dev.azure.com/zkSNACKs/Wasabi/_apis/build/status/Wasabi.Linux?branchName=master
-[4]: https://dev.azure.com/zkSNACKs/Wasabi/_build?definitionId=1
-[5]: https://dev.azure.com/zkSNACKs/Wasabi/_apis/build/status/Wasabi.Osx?branchName=master
-[6]: https://dev.azure.com/zkSNACKs/Wasabi/_build?definitionId=2
-[7]: https://img.shields.io/github/license/GingerPrivacy/GingerWallet.svg
-[8]: https://github.com/GingerPrivacy/GingerWallet/blob/master/LICENSE.md
-[9]: https://www.codefactor.io/repository/github/zksnacks/walletwasabi/badge
-[10]: https://www.codefactor.io/repository/github/zksnacks/walletwasabi
-[11]: https://dev.azure.com/zkSNACKs/Wasabi/_apis/build/status/Wasabi.ContinuousDelivery?branchName=master
-[12]: https://dev.azure.com/zkSNACKs/Wasabi/_build/latest?definitionId=12&branchName=master
-[13]: https://dev.azure.com/zkSNACKs/Wasabi/_apis/build/status/Wasabi.DeterministicBuild?branchName=master
-[14]: https://dev.azure.com/zkSNACKs/Wasabi/_build/latest?definitionId=13&branchName=master
+The goal is to provide a reliable and privacy-aware user experience while keeping the full source code publicly available.
 
-</h3>
-<br>
+---
 
-# [Download GingerWallet](https://github.com/GingerPrivacy/GingerWallet/releases)
+## Downloads
 
-<br>
+Official release binaries are available in the GitHub **Releases** section.
 
-# Build From Source Code
+There are no pre-releases.  
+You can always build the latest version directly from the `master` branch.
 
-### Get The Requirements
+---
 
-1. Get Git: https://git-scm.com/downloads
-2. Get .NET 8.0 SDK: https://dotnet.microsoft.com/download
-3. Optionally disable .NET's telemetry by executing in the terminal `export DOTNET_CLI_TELEMETRY_OPTOUT=1` on Linux and macOS or `setx DOTNET_CLI_TELEMETRY_OPTOUT 1` on Windows.
+## Release Artifacts
 
-### Get GingerWallet
+### Windows
+- **MSI** – Code signed (Martin Rimoczi, Certum Code Signing CA)
+- **ZIP (portable)** – Deterministically reproducible build
 
-Clone & Restore & Build
+### macOS
+- **DMG** – Signed with Apple Developer ID
 
-```sh
-git clone --depth=1 --single-branch --branch=master https://github.com/GingerPrivacy/GingerWallet.git
-cd WalletWasabi/WalletWasabi.Fluent.Desktop
-dotnet build
+### Verification
+- All files include a corresponding **PGP (.asc)** signature  
+- Public key: <https://github.com/GingerPrivacy/GingerWallet/blob/master/PGP.txt>
+
+---
+
+## Build from source (master)
+
+### Requirements
+- .NET SDK (as defined in the repository)
+- Git
+
+### Quick start
+
+```bash
+git clone https://github.com/GingerPrivacy/GingerWallet.git
+cd GingerWallet
+dotnet restore --locked-mode
+dotnet build --configuration Release
+dotnet run --configuration Release
 ```
 
-### Run GingerWallet
+To run unit tests:
 
-Run GingerWallet with `dotnet run` from the `WalletWasabi.Fluent.Desktop` folder.
-
-### Update GingerWallet
-
-```sh
-git pull
+```bash
+dotnet test --configuration Release --filter "UnitTests"
 ```
+
+---
+
+## Contributing
+
+See:  
+https://github.com/GingerPrivacy/GingerWallet/blob/master/CONTRIBUTING.md
+
+---
+
+## Security
+
+If you believe you found a security issue, avoid opening a public issue.  
+Use GitHub Security Advisories (if enabled) or contact the maintainers privately.
+
+---
+
+## License
+
+See the `LICENSE` file in this repository.
