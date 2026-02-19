@@ -1,41 +1,62 @@
 ---
-name: Bug Report
-about: Report a bug
+name: "Bug report"
+about: "Report a problem in Ginger Wallet"
+title: "[Bug] "
+labels: ["bug"]
+assignees: []
+---
+
+## Summary
+<!-- Clear and concise description of the issue. -->
+
+## Impact
+<!-- Severity: Crash / Funds at risk / UI freeze / Incorrect data / Performance issue / Minor issue -->
+
+## Steps to Reproduce
+1.
+2.
+3.
+
+## Expected Behavior
+<!-- What did you expect to happen? -->
+
+## Actual Behavior
+<!-- What happened instead? Include exact error message if any. -->
+
+## Screenshots / Screen Recording
+<!-- Attach screenshots or a short screen recording if applicable. -->
 
 ---
 
-### General Description
+## Environment
+- **Ginger Wallet version:** <!-- e.g. 2.x.y (see About dialog) -->
+- **Operating System:** <!-- Windows 10 / Windows 11 -->
+- **Network setup (if relevant):** <!-- Tor enabled/disabled, VPN, proxy, restrictive network, etc. -->
 
-<!-- A clear and concise description of what the bug is. -->
+---
 
-### How To Reproduce?
+## Logs
 
-1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See ERROR
+⚠️ Before posting logs, remove any sensitive information (wallet names, xpubs, addresses, IP addresses if necessary).  
+Only include a short excerpt around the time the issue occurred.
 
-### Screenshots
+<!--
+Option 1:
+Click the magnifying glass icon at the top of Ginger Wallet, then select "Log File" from the menu and copy the relevant content.
 
-<!-- If applicable, add screenshots to help explain your problem. -->
+Option 2:
+Manually navigate to the data folder and open the log file.
 
-### Operating System
+Windows:
+%APPDATA%\GingerWallet\Client
 
-<!-- *Please consider your privacy, before completing this section.* -->
+Linux:
+/home/{your username}/.gingerwallet/client
 
-<!-- Example: Ubuntu 22.04.3 LTS -->
+macOS:
+/Users/{your username}/.gingerwallet/client
+-->
 
-### Logs
+---
 
-<!-- *Please consider your privacy, before completing this section.* -->
 
-```
-Insert Your Logs Here
-```
-
-<!-- You can find the `Logs.txt` file in the dropdown menu of the search bar or inside your Wasabi data folder or find `%PROFILE_PATH%/WalletWasabi/Client/Logs.txt` file. -->
-
-### Wasabi Version
-
-<!-- Which wasabi release are you using? Where did you download it from?  
-You can figure out which version you are using by choosing `About Wasabi` from the dropdown menu in the search bar. -->
